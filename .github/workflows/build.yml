@@ -1,0 +1,19 @@
+name: build
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: oven-sh/setup-bun@v1
+      with:
+        bun-version: latest
+    - name: Build
+      run: bun build cli.ts --compile --outfile jth
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: jth
+        path: jth
