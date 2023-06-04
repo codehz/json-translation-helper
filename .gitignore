@@ -171,3 +171,5 @@ dist
 *.txt
 *.new
 *.test.json
+*.filter.[jt]s
+*.premark.[jt]s

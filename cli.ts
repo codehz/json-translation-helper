@@ -3,6 +3,7 @@ import { patch as patchFn } from "./patch";
 import { createReadStream, createWriteStream, readFileSync } from "node:fs";
 import arg from "arg";
 import { parseCommands } from "minimist-subcommand";
+import { FilterFn, PremarkFn } from "./types";
 
 const {
   commands: [command = ""],
@@ -20,8 +21,10 @@ const {
 if (!command) {
   console.error("No command specified");
   console.error("Help:");
-  console.error("  generate [source-file] -p [patch-file]");
-  console.error("  patch [source-file] -p [patch-file] -o [destination-file]");
+  console.error("  generate [source-file] -p [patch-file] -e [exclude-keys]");
+  console.error(
+    "  patch [source-file] -p [patch-file] -e [exclude-keys] -o [destination-file]"
+  );
   process.exit(1);
 }
 
@@ -29,10 +32,16 @@ if (command === "generate") {
   let {
     _: [source],
     "--patch": patch,
+    "--filter": filtersSrc = [],
+    "--premark": premarksSrc = [],
   } = arg(
     {
       "--patch": String,
+      "--filter": [String],
+      "--premark": [String],
       "-p": "--patch",
+      "-f": "--filter",
+      "-m": "--premark",
     },
     { argv }
   );
@@ -41,18 +50,33 @@ if (command === "generate") {
     process.exit(1);
   }
   patch ??= source + ".patch.txt";
-  generate(createReadStream(source), createWriteStream(patch));
+  const filters = await Promise.all(
+    filtersSrc.map(async (x) => (await import(x)).default as FilterFn)
+  );
+  const premarks = await Promise.all(
+    premarksSrc.map(async (x) => (await import(x)).default as PremarkFn)
+  );
+  generate(createReadStream(source), createWriteStream(patch), {
+    filters,
+    premarks,
+  });
 } else if (command === "patch") {
   let {
     _: [source],
     "--patch": patch,
     "--output": output,
+    "--filter": filtersSrc = [],
+    "--premark": premarksSrc = [],
   } = arg(
     {
       "--patch": String,
       "--output": String,
+      "--filter": [String],
+      "--premark": [String],
       "-p": "--patch",
       "-o": "--output",
+      "-f": "--filter",
+      "-m": "--premark",
     },
     { argv }
   );
@@ -62,9 +86,19 @@ if (command === "generate") {
   }
   patch ??= source + ".patch.txt";
   output ??= source + ".new";
+  const filters = await Promise.all(
+    filtersSrc.map(async (x) => (await import(x)).default as FilterFn)
+  );
+  const premarks = await Promise.all(
+    premarksSrc.map(async (x) => (await import(x)).default as PremarkFn)
+  );
   patchFn(
     createReadStream(source),
     createWriteStream(output),
-    readFileSync(patch, { encoding: "utf-8" }).split("\n")
+    readFileSync(patch, { encoding: "utf-8" }).split("\n"),
+    {
+      filters,
+      premarks,
+    }
   );
 }
