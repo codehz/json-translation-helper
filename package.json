@@ -1,0 +1,21 @@
+{
+  "name": "json-translation-helper",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "bun-types": "^0.6.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@types/minimist": "^1.2.2",
+    "@types/stream-chain": "^2.0.1",
+    "@types/stream-json": "^1.7.3",
+    "arg": "^5.0.2",
+    "minimist": "^1.2.8",
+    "minimist-subcommand": "^3.0.2",
+    "stream-chain": "^2.2.5",
+    "stream-json": "^1.8.0"
+  }
+}
