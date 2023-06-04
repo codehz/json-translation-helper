@@ -13,9 +13,9 @@ jobs:
     - name: Install
       run: bun install
     - name: Build
-      run: bun build cli.ts --compile --outfile jth
+      run: bun build cli.ts --target bun --outdir dist
     - name: Upload artifact
       uses: actions/upload-artifact@v2
       with:
-        name: jth
-        path: jth
+        name: dist
+        path: dist
