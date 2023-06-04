@@ -21,9 +21,11 @@ const {
 if (!command) {
   console.error("No command specified");
   console.error("Help:");
-  console.error("  generate [source-file] -p [patch-file] -e [exclude-keys]");
   console.error(
-    "  patch [source-file] -p [patch-file] -e [exclude-keys] -o [destination-file]"
+    "  generate [source-file] -p [patch-file] -f [filter-source] -m [premark-source]"
+  );
+  console.error(
+    "  patch [source-file] -p [patch-file] -f [filter-source] -m [premark-source] -o [destination-file]"
   );
   process.exit(1);
 }
